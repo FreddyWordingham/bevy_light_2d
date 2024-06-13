@@ -89,3 +89,33 @@ impl Default for AmbientLight2d {
         }
     }
 }
+
+/// A component representing a circular occluder in 2D space.
+#[derive(Component, Clone, Reflect)]
+pub struct CircularOccluder2d {
+    /// The radius of the occluder.
+    pub radius: f32,
+}
+
+impl Default for CircularOccluder2d {
+    fn default() -> Self {
+        Self { radius: 0.0 }
+    }
+}
+
+/// A bundle of components for rendering a [`PointLight2d`] entity.
+#[derive(Bundle, Default)]
+pub struct CircularOccluder2dBundle {
+    /// Specifies the rendering properties of the occluder.
+    pub circular_occluder: CircularOccluder2d,
+    /// The local transform of the point light, relative to its parent.
+    pub transform: Transform,
+    /// The absolute transform of the point light. This should generally not be written to directly.
+    pub global_transform: GlobalTransform,
+    /// User indication of whether an entity is visible.
+    pub visibility: Visibility,
+    /// Inherited visibility of an entity.
+    pub inherited_visibility: InheritedVisibility,
+    /// Algorithmically-computed indication of whether an entity is visible and should be extracted for rendering.
+    pub view_visibility: ViewVisibility,
+}

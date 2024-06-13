@@ -11,7 +11,9 @@ use bevy::render::renderer::RenderDevice;
 use bevy::render::texture::BevyDefault;
 use bevy::render::view::ViewUniform;
 
-use crate::render::extract::{ExtractedAmbientLight2d, ExtractedPointLight2d};
+use crate::render::extract::{
+    ExtractedAmbientLight2d, ExtractedCircularOccluder2d, ExtractedPointLight2d,
+};
 
 use super::LIGHTING_SHADER;
 
@@ -39,6 +41,7 @@ impl FromWorld for LightingPipeline {
                     uniform_buffer::<ViewUniform>(true),
                     uniform_buffer::<ExtractedAmbientLight2d>(true),
                     GpuArrayBuffer::<ExtractedPointLight2d>::binding_layout(render_device),
+                    GpuArrayBuffer::<ExtractedCircularOccluder2d>::binding_layout(render_device),
                 ),
             ),
         );

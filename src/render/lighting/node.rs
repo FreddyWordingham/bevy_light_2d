@@ -10,7 +10,9 @@ use bevy::render::renderer::RenderDevice;
 use bevy::render::view::{ViewTarget, ViewUniformOffset, ViewUniforms};
 use bevy::utils::smallvec::{smallvec, SmallVec};
 
-use crate::render::extract::{ExtractedAmbientLight2d, ExtractedPointLight2d};
+use crate::render::extract::{
+    ExtractedAmbientLight2d, ExtractedCircularOccluder2d, ExtractedPointLight2d,
+};
 
 use super::LightingPipeline;
 
@@ -62,6 +64,13 @@ impl ViewNode for LightingNode {
             return Ok(());
         };
 
+        let Some(circular_occluder_binding) = world
+            .resource::<GpuArrayBuffer<ExtractedCircularOccluder2d>>()
+            .binding()
+        else {
+            return Ok(());
+        };
+
         let post_process = view_target.post_process_write();
 
         let bind_group = render_context.render_device().create_bind_group(
@@ -73,6 +82,7 @@ impl ViewNode for LightingNode {
                 view_uniform_binding,
                 ambient_light_uniform,
                 point_light_binding,
+                circular_occluder_binding,
             )),
         );
 

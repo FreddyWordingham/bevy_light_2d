@@ -3,7 +3,7 @@ use bevy::{
     render::{render_resource::ShaderType, Extract},
 };
 
-use crate::light::{AmbientLight2d, PointLight2d};
+use crate::light::{AmbientLight2d, CircularOccluder2d, PointLight2d};
 
 #[derive(Component, Default, Clone, ShaderType)]
 pub struct ExtractedPointLight2d {
@@ -17,6 +17,36 @@ pub struct ExtractedPointLight2d {
 #[derive(Component, Default, Clone, ShaderType)]
 pub struct ExtractedAmbientLight2d {
     pub color: Vec4,
+}
+
+#[derive(Component, Default, Clone, ShaderType)]
+pub struct ExtractedCircularOccluder2d {
+    pub transform: Vec2,
+    pub radius: f32,
+}
+
+pub fn extract_circular_occluders(
+    mut commands: Commands,
+    circular_occluder_query: Extract<
+        Query<(
+            Entity,
+            &CircularOccluder2d,
+            &GlobalTransform,
+            &ViewVisibility,
+        )>,
+    >,
+) {
+    for (entity, circular_occluder, global_transform, view_visibility) in &circular_occluder_query {
+        if !view_visibility.get() {
+            continue;
+        }
+        commands
+            .get_or_spawn(entity)
+            .insert(ExtractedCircularOccluder2d {
+                transform: global_transform.translation().xy(),
+                radius: circular_occluder.radius,
+            });
+    }
 }
 
 pub fn extract_point_lights(

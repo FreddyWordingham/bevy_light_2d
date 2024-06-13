@@ -7,6 +7,9 @@ mod render;
 
 /// A module which exports commonly used dependencies.
 pub mod prelude {
-    pub use crate::light::{AmbientLight2d, PointLight2d, PointLight2dBundle};
+    pub use crate::light::{
+        AmbientLight2d, CircularOccluder2d, CircularOccluder2dBundle, PointLight2d,
+        PointLight2dBundle,
+    };
     pub use crate::plugin::Light2dPlugin;
 }

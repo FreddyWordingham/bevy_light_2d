@@ -13,11 +13,11 @@ use bevy::{
 };
 
 use crate::{
-    light::{AmbientLight2d, PointLight2d},
+    light::{AmbientLight2d, CircularOccluder2d, PointLight2d},
     render::{
         extract::{
-            extract_ambient_lights, extract_point_lights, ExtractedAmbientLight2d,
-            ExtractedPointLight2d,
+            extract_ambient_lights, extract_circular_occluders, extract_point_lights,
+            ExtractedAmbientLight2d, ExtractedCircularOccluder2d, ExtractedPointLight2d,
         },
         lighting::{LightingNode, LightingPass, LightingPipeline, LIGHTING_SHADER},
     },
@@ -38,9 +38,11 @@ impl Plugin for Light2dPlugin {
         app.add_plugins((
             UniformComponentPlugin::<ExtractedAmbientLight2d>::default(),
             GpuComponentArrayBufferPlugin::<ExtractedPointLight2d>::default(),
+            GpuComponentArrayBufferPlugin::<ExtractedCircularOccluder2d>::default(),
         ))
         .register_type::<AmbientLight2d>()
-        .register_type::<PointLight2d>();
+        .register_type::<PointLight2d>()
+        .register_type::<CircularOccluder2d>();
 
         let Ok(render_app) = app.get_sub_app_mut(RenderApp) else {
             return;
@@ -49,7 +51,11 @@ impl Plugin for Light2dPlugin {
         render_app
             .add_systems(
                 ExtractSchedule,
-                (extract_point_lights, extract_ambient_lights),
+                (
+                    extract_point_lights,
+                    extract_ambient_lights,
+                    extract_circular_occluders,
+                ),
             )
             .add_render_graph_node::<ViewNodeRunner<LightingNode>>(Core2d, LightingPass)
             .add_render_graph_edge(Core2d, Node2d::MainPass, LightingPass);
